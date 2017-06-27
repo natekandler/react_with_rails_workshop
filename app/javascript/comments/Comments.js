@@ -3,8 +3,8 @@ import Comment from './Comment';
 
 class Comments extends Component {
   renderComments() {
-    if(this.props.commentList){
-      return this.props.commentList.map( (comment, index) => 
+    if(this.props.comments){
+      return this.props.comments.map( (comment, index) => 
         <Comment key={index} comment={comment}/>
       )
     }

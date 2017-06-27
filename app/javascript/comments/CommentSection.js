@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Comments from './Comments'
 import Form from './Form'
+import { getComments } from '../api/CommentApi'
 import { getFormValues, commentList } from '../Utils/utils'
 
 class CommentSection extends Component {
@@ -9,18 +10,22 @@ class CommentSection extends Component {
 
     this.state = { 
       showForm: false,
-      commentList: commentList()
+      comments: []
     };
+  }
+
+  componentDidMount() {
+    getComments.bind(this)();
   }
 
   handleFormSubmit(event) {
     event.preventDefault();
     let newComment = getFormValues(event.target)
-    if(newComment.body && newComment.author){
-      let list = [...this.state.commentList, newComment]
+    if(newComment.body){
+      let list = [...this.state.comments, newComment]
       this.setState({ 
         showForm: false,
-        commentList: list
+        comments: list
       })
     }
   }
@@ -45,7 +50,7 @@ class CommentSection extends Component {
   render() {
     return (
       <div className="CommentSection">
-        <Comments commentList={this.state.commentList} />
+        <Comments comments={this.state.comments} />
         {this.renderForm()}
       </div>
     )
