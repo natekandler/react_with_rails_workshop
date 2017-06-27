@@ -140,8 +140,81 @@ componentDidMount() {
 
 Now we're loading comments from the database!
 ### Release 3: Sending Data To The Server
+We're now getting our comments from the database, but if we create a new comment it doesn't persist. Let's fix that!
 
-#### Release 4: Updating View With Response
+We need to add a createComment function to our CommentApi. We can use fetch again but we need to add a couple of things. Fetch can take an options hash as a second argument and we'll add everything there.
 
-#### Release 5: Deleting A Comment
+We'll need to pass in four options
+- the HTTP method 
+- the body 
+- headers (the CSRF token, the data type we're sending and accepting)
+- credentials
+
+The HTTP method is easy, it's going to be a post. We'll get the data for the body from the form and pass it in as an argument. 
+
+For the headers we'll accept 'application/json' and let the server know we're sending 'application/json'. Since we're using a Rails view the CSRF token won't be difficult to get, we can just grab it from the document head.
+``` JavaScript
+let token = document.head.querySelector("[name=csrf-token]").content;
+```
+And the we just need to let it know that our request is 'same-origin'.
+
+So our POST request will look like this:
+``` JavaScript
+fetch('/comments', {
+  method: 'post',
+  body: newComment,
+  headers: {
+    'X-CSRF-Token': token,
+    'accept': "application/json",
+    'Content-Type': 'application/json'
+  },
+  credentials: 'same-origin'
+})
+```
+
+Again we'll need to parse the JSON and set the state with the response data (we also want to handle hiding the form when we set the state here). The whole function in our CommentApi will look like this
+
+``` JavaScript
+export function createComment(newComment) {
+  let token = document.head.querySelector("[name=csrf-token]").content;
+
+  fetch('/comments', {
+    method: 'post',
+    body: {comment: newComment},
+    headers: {
+      'X-CSRF-Token': token,
+      'accept': "application/json",
+      'Content-Type': 'application/json'
+    },
+    credentials: 'same-origin'
+  })
+  .then((response) => {
+    response.json().then((data) => {
+      let list = [...this.state.comments, data]
+      this.setState({ 
+        showForm: false,
+        comments: list
+      })
+    })
+  })
+}
+
+```
+In our CommentSection component we need to import this function as well
+``` JavaScript
+import { getComments, createComment } from '../api/CommentApi'
+```
+And then use it in our handleFormSubmit function. Remember we need to bind the context of our CommentSection component to the form so we can correctly set the state!
+
+``` JavaScript
+handleFormSubmit(event) {
+  event.preventDefault();
+  let newComment = getFormValues(event.target)
+  if(newComment.body){
+    createComment.bind(this)(newComment)
+  }
+}
+```
+#### Release 4: Deleting A Comment
+
 Using the things we've learned to add a delete button

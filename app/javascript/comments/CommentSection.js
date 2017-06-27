@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Comments from './Comments'
 import Form from './Form'
-import { getComments } from '../api/CommentApi'
+import { getComments, createComment } from '../api/CommentApi'
 import { getFormValues, commentList } from '../Utils/utils'
 
 class CommentSection extends Component {
@@ -22,11 +22,7 @@ class CommentSection extends Component {
     event.preventDefault();
     let newComment = getFormValues(event.target)
     if(newComment.body){
-      let list = [...this.state.comments, newComment]
-      this.setState({ 
-        showForm: false,
-        comments: list
-      })
+      createComment.bind(this)(newComment)
     }
   }
 
