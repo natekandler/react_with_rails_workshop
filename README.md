@@ -216,5 +216,78 @@ handleFormSubmit(event) {
 }
 ```
 #### Release 4: Deleting A Comment
+Everything is set except the ability to delete a comment. This is going to require some additional code because it's not functionality our other app had. Let's put it all together!
 
-Using the things we've learned to add a delete button
+Let's start by adding a delete button to the comment. This is simply going to be an anchor tag in the JSX of the comment component. We can add it as the first thing inside our Comment div that wraps the component. We'll need to set the id attribute equal to the comment's id so we can grab it from the event.
+```JavaScript
+<a href="#" id={comment.id} className="delete-btn">x</a>
+```
+We need to add another request to our CommentApi. This time we need the id of the comment we're deleting. We can just grab it off the event. 
+``` JavaScript
+let id = event.target.getAttribute('id')
+```
+We'll use this in the url, and with ES6 template strings we don't even need to add the strings together! We don't need to add a body because the params will come from the url.  Our delete request will look like this
+``` JavaScript
+export function deleteComment(event) {
+  event.preventDefault();
+  let token = document.head.querySelector("[name=csrf-token]").content;
+  let id = event.target.getAttribute('id')
+
+  fetch(`comments/${id}.json`, {
+    method: 'delete',
+    headers: {
+      'X-CSRF-Token': token,
+      'accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    credentials: 'same-origin'
+  })
+}
+```
+We still need to handle the Promise this returns. Because we need to do some processing we'll create a function that we can call inside `then`.
+
+``` JavaScript
+handleCommentDeleteResponse(response){
+  response.json().then((data)=>{
+    let list = this.state.commentList
+    list = list.filter((comment) => {return comment.id !=  data.id})
+    this.setState({comments: list})
+  })
+}
+```
+And we'll call it at the end of our fetch
+``` JavaScript
+fetch(`comments/${id}.json`, {
+  method: 'delete',
+  headers: {
+    'X-CSRF-Token': token,
+    'accept': 'application/json',
+    'Content-Type': 'application/json'
+  },
+  credentials: 'same-origin'
+}).then((response) => {
+  handleCommentDeleteResponse(response)
+})
+```
+Now everything is wired up for our request but we don't have a function that Let's add it to the CommentSection component.
+
+We'll start by importing our `commentDelete` function in out imports at the top of the file. 
+``` JavaScript
+import { getComments, createComment, deleteComment } from '../api/CommentApi'
+```
+Now that we have access to our `deleteComment` function we can pass it straight through to our child components. Don't forget to bind the context! In CommentSection passed through to Comments:
+```JavaScript
+<Comments comments={this.state.comments} deleteComment={deleteComment.bind(this)} />
+```
+In Comments passed through to Comment:
+```JavaScript
+<Comment key={index} comment={comment} deleteComment={this.props.deleteComment}/>
+```
+And finally we'll grab it in Comment using destructuring and bind it to the click of our anchor tag.
+```JavaScript
+const Comment  = ({comment, deleteComment}) => (
+  <div className="Comment">
+    <a href="#" id={comment.id} className="delete-btn" onClick={deleteComment}>x</a>
+...
+```
+And that's it! We can now create and delete comments from a database!

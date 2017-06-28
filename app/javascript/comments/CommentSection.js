@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Comments from './Comments'
 import Form from './Form'
-import { getComments, createComment } from '../api/CommentApi'
+import { getComments, createComment, deleteComment } from '../api/CommentApi'
 import { getFormValues, commentList } from '../Utils/utils'
 
 class CommentSection extends Component {
@@ -46,7 +46,7 @@ class CommentSection extends Component {
   render() {
     return (
       <div className="CommentSection">
-        <Comments comments={this.state.comments} />
+        <Comments comments={this.state.comments} deleteComment={deleteComment.bind(this)} />
         {this.renderForm()}
       </div>
     )

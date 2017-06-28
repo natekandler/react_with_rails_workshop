@@ -94,3 +94,14 @@ textarea{
     color: #7e56c1; 
   }
 }
+
+.delete-btn{
+  position: absolute;
+  right: 10px;
+  top: 7px;
+  text-decoration: none;
+  color: #808080;
+  &:hover{
+    color: #7e56c1; 
+  }
+}

@@ -33,3 +33,29 @@ export function createComment(newComment) {
     })
   })
 }
+
+export function deleteComment(event) {
+  event.preventDefault()
+  let token = document.head.querySelector("[name=csrf-token]").content;
+  let id = event.target.getAttribute('id')
+
+  fetch(`comments/${id}.json`, {
+    method: 'delete',
+    body: JSON.stringify({"id": id}),
+    headers: {
+      'X-CSRF-Token': token,
+      'accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    credentials: 'same-origin'
+  }).then((response) => {
+    handleCommentDeleteResponse.bind(this)(response)
+  })
+}
+function handleCommentDeleteResponse(response){
+  response.json().then((data)=>{
+    let list = this.state.comments
+    list = list.filter((comment) => {return comment.id !=  data.id})
+    this.setState({comments: list})
+  })
+}

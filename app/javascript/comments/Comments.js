@@ -5,7 +5,7 @@ class Comments extends Component {
   renderComments() {
     if(this.props.comments){
       return this.props.comments.map( (comment, index) => 
-        <Comment key={index} comment={comment}/>
+        <Comment key={index} comment={comment} deleteComment={this.props.deleteComment}/>
       )
     }
   }
