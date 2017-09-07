@@ -8,14 +8,22 @@ class CommentSection extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { 
+    this.state = {
       showForm: false,
       comments: []
     };
   }
 
+  setComments() {
+    getComments().then((responseObject) => {
+      this.setState({
+        comments: responseObject
+      })
+    });
+  }
+
   componentDidMount() {
-    getComments.bind(this)();
+    this.setComments()
   }
 
   handleFormSubmit(event) {
@@ -33,8 +41,8 @@ class CommentSection extends Component {
 
   showCommentForm() {
     this.setState({ showForm: true })
-  } 
-  
+  }
+
   renderForm() {
     if(this.state.showForm){
       return <Form handleFormSubmit={this.handleFormSubmit.bind(this)} hideCommentForm={this.hideCommentForm.bind(this)} />
@@ -54,4 +62,3 @@ class CommentSection extends Component {
 }
 
 export default CommentSection
-

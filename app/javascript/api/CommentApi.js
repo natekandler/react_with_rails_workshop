@@ -1,13 +1,8 @@
 export function getComments() {
-  fetch('/comments.json')
+  return fetch('/comments.json')
   .then((response) => {
     return response.json();
   }) 
-  .then((responseObject) => {
-    this.setState({
-      comments: responseObject
-    }) 
-  });
 };
 
 export function createComment(newComment) {
@@ -26,7 +21,7 @@ export function createComment(newComment) {
   .then((response) => {
     response.json().then((data) => {
       let list = [...this.state.comments, data]
-      this.setState({ 
+      this.setState({
         showForm: false,
         comments: list
       })
